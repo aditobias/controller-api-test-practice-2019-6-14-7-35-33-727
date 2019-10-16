@@ -20,8 +20,7 @@ import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -84,6 +83,30 @@ class TodoControllerTest {
 
         //then
         result.andExpect(status().isCreated());
+    }
+
+    @Test
+    void should_return_OK_when_user_is_deleted() throws Exception {
+        //Given
+        Todo todo = new Todo(1, "TestingSearch", false, 1);
+
+        when(todoRepository.findById(1L)).thenReturn(Optional.of(todo));
+        //when
+        ResultActions result = mvc.perform(delete("/todos/{todo-id}", 1L))  ;
+
+        //then
+        result.andExpect(status().isOk());
+    }
+
+    @Test
+    void should_return_NOT_FOUND_when_user_is_invalid_or_not_existing() throws Exception {
+        //Given
+
+        //when
+        ResultActions result = mvc.perform(delete("/todos/{todo-id}", 1L))  ;
+
+        //then
+        result.andExpect(status().isNotFound());
     }
 
     public static String asJsonString(final Todo obj) {
