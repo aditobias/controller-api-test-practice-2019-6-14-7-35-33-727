@@ -18,7 +18,7 @@ public class ResourceWithUrl<T> {
     }
 
     @JsonUnwrapped
-    @XmlAnyElement
+//    @XmlAnyElement
     public T getContent() {
         return content;
     }
