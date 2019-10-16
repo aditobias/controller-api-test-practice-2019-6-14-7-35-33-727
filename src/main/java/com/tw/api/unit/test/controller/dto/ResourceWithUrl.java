@@ -2,7 +2,7 @@ package com.tw.api.unit.test.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
-import javax.xml.bind.annotation.XmlAnyElement;
+//import javax.xml.bind.annotation.XmlAnyElement;
 
 public class ResourceWithUrl<T> {
     private T content;

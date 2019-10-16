@@ -9,20 +9,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.GsonBuilderUtils;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -75,16 +72,25 @@ class TodoControllerTest {
     @Test
     void should_return_created_when_posting_new_todo() throws Exception {
         //Given
-        ObjectMapper mapper = new ObjectMapper();
-        Todo todo = new Todo(1, "TestingSearch", false, 1);
         List<Todo> todoList = new ArrayList<>();
-        String jsonString = mapper.writeValueAsString(todo);
-        todoList.add(todo);
+        Todo todo = new Todo("test", false);
+
         when(todoRepository.getAll()).thenReturn(todoList);
         //when
-        ResultActions result = mvc.perform(post("/todos/{todo-id}", todo));
+        ResultActions result = mvc.perform(post("/todos")
+                        .content(asJsonString(todo))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON));
 
         //then
-        result.andExpect(status().isOk());
+        result.andExpect(status().isCreated());
+    }
+
+    public static String asJsonString(final Todo obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
