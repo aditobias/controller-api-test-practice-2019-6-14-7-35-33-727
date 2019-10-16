@@ -109,6 +109,54 @@ class TodoControllerTest {
         result.andExpect(status().isNotFound());
     }
 
+    @Test
+    void should_return_OK_and_updated_todo_when_given_correct_id_and_updated_todo() throws Exception {
+        //Given
+        Todo todo = new Todo(1, "TestingSearch", false, 1);
+        when(todoRepository.findById(1L)).thenReturn(Optional.of(todo));
+
+        //when
+        ResultActions result = mvc.perform(patch("/todos/{todo-id}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(asJsonString(todo)));
+
+        //then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("1"));
+    }
+
+    @Test
+    void should_return_not_found_if_old_todo_is_not_found() throws Exception {
+        //Given
+        Todo todo = new Todo(1, "TestingSearch", false, 1);
+
+        //when
+        ResultActions result = mvc.perform(patch("/todos/{todo-id}", 2L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(asJsonString(todo)));
+
+        //then
+        result.andExpect(status().isNotFound());
+    }
+
+    @Test
+    void should_return_bad_request_if_new_todo_is_not_given() throws Exception {
+        //Given
+        Todo todo = new Todo(1, "TestingSearch", false, 1);
+
+        //when
+        ResultActions result = mvc.perform(patch("/todos/{todo-id}", 2L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
+
+        //then
+        result.andExpect(status().isBadRequest());
+    }
+
+
+
     public static String asJsonString(final Todo obj) {
         try {
             return new ObjectMapper().writeValueAsString(obj);
